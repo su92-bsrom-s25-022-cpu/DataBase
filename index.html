@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Systems · SQL MCQs · Interactive Quiz</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: #f4f7fc;
+      color: #1e2b3c;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .quiz-container {
+      max-width: 1000px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px -12px rgba(0, 20, 30, 0.25);
+      padding: 32px 28px 48px;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #0b2b44;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    h1 small {
+      font-size: 1rem;
+      font-weight: 400;
+      background: #e5edf5;
+      color: #1e4a6b;
+      padding: 4px 16px;
+      border-radius: 40px;
+      letter-spacing: 0.3px;
+    }
+    .subhead {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 2px solid #dfe9f2;
+      padding-bottom: 16px;
+    }
+    .badge {
+      background: #1f5e8e;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 4px 8px rgba(28, 80, 120, 0.2);
+    }
+    .btn-shuffle {
+      background: #ff8c42;
+      border: none;
+      color: #1e2b3c;
+      padding: 10px 26px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 8px 16px -4px rgba(255, 140, 66, 0.4);
+      transition: 0.15s;
+      border: 1px solid #f57c2e;
+    }
+    .btn-shuffle:hover {
+      background: #ff9f5a;
+      box-shadow: 0 10px 20px -4px rgba(255, 140, 66, 0.6);
+      transform: scale(1.01);
+    }
+    .btn-shuffle:active {
+      transform: scale(0.98);
+    }
+    .mcq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .mcq-card {
+      background: #ffffff;
+      border: 1px solid #dbe6f0;
+      border-radius: 24px;
+      padding: 20px 22px;
+      transition: 0.1s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+    .mcq-card.correct-highlight {
+      border-left: 8px solid #2e9e5b;
+      background: #f6fff9;
+    }
+    .mcq-card.wrong-highlight {
+      border-left: 8px solid #d14b4b;
+      background: #fff8f8;
+    }
+    .mcq-question {
+      font-weight: 600;
+      font-size: 1.08rem;
+      line-height: 1.45;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+    }
+    .q-num {
+      background: #e3eef9;
+      color: #1c4e72;
+      border-radius: 30px;
+      padding: 2px 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      height: fit-content;
+      white-space: nowrap;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-left: 8px;
+    }
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f9fcff;
+      border-radius: 60px;
+      padding: 10px 18px;
+      border: 1.5px solid #d0e0ee;
+      cursor: pointer;
+      transition: 0.12s;
+      font-size: 1rem;
+      color: #1b344a;
+    }
+    .option:hover {
+      background: #e5f0fd;
+      border-color: #7ea9c7;
+    }
+    .option.selected {
+      background: #d9e9fa;
+      border-color: #1f6ea5;
+      box-shadow: 0 0 0 2px rgba(31, 110, 165, 0.2);
+    }
+    .option.correct-option {
+      background: #d2f0de;
+      border-color: #1e8e4a;
+      font-weight: 500;
+    }
+    .option.wrong-option {
+      background: #ffe1e1;
+      border-color: #bc3b3b;
+      text-decoration: line-through 1.5px #a12e2e;
+    }
+    .option input[type="radio"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #a3bdd6;
+      border-radius: 50%;
+      margin: 0;
+      flex-shrink: 0;
+      transition: 0.1s;
+      position: relative;
+      cursor: pointer;
+    }
+    .option input[type="radio"]:checked {
+      border: 6px solid #1e6ea5;
+      background: white;
+    }
+    .option.correct-option input[type="radio"]:checked {
+      border-color: #1e8e4a;
+    }
+    .option.wrong-option input[type="radio"]:checked {
+      border-color: #bc3b3b;
+    }
+    .feedback {
+      margin-top: 12px;
+      margin-left: 12px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      min-height: 24px;
+    }
+    .feedback.correct {
+      color: #1b7e3f;
+    }
+    .feedback.wrong {
+      color: #b13b3b;
+    }
+    .footer-note {
+      margin-top: 36px;
+      text-align: center;
+      color: #6a7f92;
+      font-size: 0.9rem;
+      border-top: 1px solid #d5e2ed;
+      padding-top: 22px;
+      font-weight: 400;
+    }
+    .footer-note strong {
+      color: #1e4a6b;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      font-size: 0.95rem;
+      color: #335e7e;
+      background: #eaf2fa;
+      padding: 12px 22px;
+      border-radius: 60px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container" id="quizApp">
+    <h1>
+      🗄️ Database Systems · SQL
+      <small>300 MCQs</small>
+    </h1>
+    <div class="subhead">
+      <span class="badge">📘 Interactive · instant feedback</span>
+      <button class="btn-shuffle" id="shuffleBtn">🔄 Shuffle questions & options</button>
+    </div>
+
+    <!-- MCQs will be rendered here by JavaScript -->
+    <div class="mcq-list" id="mcqList"></div>
+
+    <div class="status-bar" id="statusBar">
+      <span id="answeredCount">0 / 300 answered</span>
+      <span>✨ Created by Muhammad Waleed</span>
+    </div>
+    <div class="footer-note">
+      <strong>Database Systems · SQL MCQs</strong> · All 300 questions from the provided bank.
+    </div>
+  </div>
+
+  <script>
+    // --------------------------------------------------------------
+    // ORIGINAL DATA: 300 SQL MCQs (from the provided file)
+    // Each item: { q, opts: [A,B,C,D], ans: 0-based index }
+    // --------------------------------------------------------------
+    const rawMCQs = [
+      { q: "A university system stores records in Students(StudentID, Name, Department, Age). The manager wants to retrieve only records where Age is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Students HAVING Age > 50;", "SELECT * FROM Students ORDER BY Age > 50;", "SELECT * FROM Students WHERE Age > 50;", "UPDATE Students SET Age > 50;"], ans: 2 },
+      { q: "In the university database, an analyst needs each record from Students displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Students;", "SELECT RecordName = Name FROM Students;", "SELECT Name AS RecordName FROM Students;", "ALTER Students Name AS RecordName;"], ans: 2 },
+      { q: "The university supervisor wants the Students records arranged from the highest to the lowest value of Age. Which clause should be used?", opts: ["GROUP BY Age ASC", "WHERE Age DESC", "ORDER BY Age DESC", "SORT Age HIGH"], ans: 2 },
+      { q: "A report for the university system must show the number of records in Students, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "COUNT(*)", "MAX(*)"], ans: 2 },
+      { q: "The university database team needs the average value of Age for all rows in Students. Which query is correct?", opts: ["SELECT AVG(Age) FROM Students;", "SELECT COUNT(Age) FROM Students;", "SELECT SUM(*) FROM Students;", "SELECT MEAN(Age) FROM Students;"], ans: 0 },
+      { q: "While preparing a university report, the analyst must show each row from Students together with its matching related row from Enrollments. The common identifier is StudentID and it appears in Enrollments. Which operation is required?", opts: ["CROSS JOIN Enrollments WHERE unrelated columns match", "INNER JOIN Enrollments ON Students.StudentID = Enrollments.StudentID", "UNION Enrollments", "RENAME Enrollments"], ans: 1 },
+      { q: "The university database designer is drawing an ER diagram. One Students record can be associated with many Enrollments records, but each Enrollments record belongs to one Students record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "One-to-many (1:N) from the first entity to the second", "Many-to-many (M:N)", "No relationship"], ans: 2 },
+      { q: "An administrator of the university system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 2 },
+      { q: "A clerk in the university system has to add a new row to Students without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Students ADD ROW;", "DML; INSERT INTO Students (StudentID, Name) VALUES (1, 'Sample');", "DCL; GRANT ROW ON Students;", "DDL; CREATE ROW Students;"], ans: 3 },
+      { q: "The university analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name LIKE 'A%'", "Name = '%A'", "Name > 'A%'"], ans: 3 },
+      { q: "A hospital system stores records in Patients(PatientID, PatientName, City, Age). The manager wants to retrieve only records where Age is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Patients HAVING Age > 50;", "SELECT * FROM Patients ORDER BY Age > 50;", "SELECT * FROM Patients WHERE Age > 50;", "UPDATE Patients SET Age > 50;"], ans: 3 },
+      { q: "In the hospital database, an analyst needs each record from Patients displayed with a temporary heading called RecordName for the PatientName column. Which query uses a column alias correctly?", opts: ["RENAME PatientName TO RecordName FROM Patients;", "SELECT RecordName = PatientName FROM Patients;", "ALTER Patients PatientName AS RecordName;", "SELECT PatientName AS RecordName FROM Patients;"], ans: 1 },
+      { q: "The hospital supervisor wants the Patients records arranged from the highest to the lowest value of Age. Which clause should be used?", opts: ["GROUP BY Age ASC", "WHERE Age DESC", "ORDER BY Age DESC", "SORT Age HIGH"], ans: 2 },
+      { q: "A report for the hospital system must show the number of records in Patients, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The hospital database team needs the average value of Age for all rows in Patients. Which query is correct?", opts: ["SELECT COUNT(Age) FROM Patients;", "SELECT SUM(*) FROM Patients;", "SELECT MEAN(Age) FROM Patients;", "SELECT AVG(Age) FROM Patients;"], ans: 1 },
+      { q: "While preparing a hospital report, the analyst must show each row from Patients together with its matching related row from Visits. The common identifier is PatientID and it appears in Visits. Which operation is required?", opts: ["INNER JOIN Visits ON Patients.PatientID = Visits.PatientID", "CROSS JOIN Visits WHERE unrelated columns match", "UNION Visits", "RENAME Visits"], ans: 0 },
+      { q: "The hospital database designer is drawing an ER diagram. One Patients record can be associated with many Visits records, but each Visits record belongs to one Patients record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the hospital system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the hospital system has to add a new row to Patients without changing its structure. Which command category and statement are appropriate?", opts: ["DML; INSERT INTO Patients (PatientID, PatientName) VALUES (1, 'Sample');", "DDL; ALTER TABLE Patients ADD ROW;", "DCL; GRANT ROW ON Patients;", "DDL; CREATE ROW Patients;"], ans: 0 },
+      { q: "The hospital analyst needs only records whose PatientName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["PatientName BETWEEN 'A' AND 'Z'", "PatientName = '%A'", "PatientName LIKE 'A%'", "PatientName > 'A%'"], ans: 2 },
+      { q: "A bank system stores records in Customers(CustomerID, CustomerName, City, Balance). The manager wants to retrieve only records where Balance is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Customers HAVING Balance > 50;", "SELECT * FROM Customers ORDER BY Balance > 50;", "UPDATE Customers SET Balance > 50;", "SELECT * FROM Customers WHERE Balance > 50;"], ans: 3 },
+      { q: "In the bank database, an analyst needs each record from Customers displayed with a temporary heading called RecordName for the CustomerName column. Which query uses a column alias correctly?", opts: ["SELECT CustomerName AS RecordName FROM Customers;", "RENAME CustomerName TO RecordName FROM Customers;", "SELECT RecordName = CustomerName FROM Customers;", "ALTER Customers CustomerName AS RecordName;"], ans: 0 },
+      { q: "The bank supervisor wants the Customers records arranged from the highest to the lowest value of Balance. Which clause should be used?", opts: ["GROUP BY Balance ASC", "ORDER BY Balance DESC", "WHERE Balance DESC", "SORT Balance HIGH"], ans: 1 },
+      { q: "A report for the bank system must show the number of records in Customers, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The bank database team needs the average value of Balance for all rows in Customers. Which query is correct?", opts: ["SELECT COUNT(Balance) FROM Customers;", "SELECT AVG(Balance) FROM Customers;", "SELECT SUM(*) FROM Customers;", "SELECT MEAN(Balance) FROM Customers;"], ans: 1 },
+      { q: "While preparing a bank report, the analyst must show each row from Customers together with its matching related row from Accounts. The common identifier is CustomerID and it appears in Accounts. Which operation is required?", opts: ["CROSS JOIN Accounts WHERE unrelated columns match", "UNION Accounts", "RENAME Accounts", "INNER JOIN Accounts ON Customers.CustomerID = Accounts.CustomerID"], ans: 3 },
+      { q: "The bank database designer is drawing an ER diagram. One Customers record can be associated with many Accounts records, but each Accounts record belongs to one Customers record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "One-to-many (1:N) from the first entity to the second", "Many-to-many (M:N)", "No relationship"], ans: 2 },
+      { q: "An administrator of the bank system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the bank system has to add a new row to Customers without changing its structure. Which command category and statement are appropriate?", opts: ["DML; INSERT INTO Customers (CustomerID, CustomerName) VALUES (1, 'Sample');", "DDL; ALTER TABLE Customers ADD ROW;", "DCL; GRANT ROW ON Customers;", "DDL; CREATE ROW Customers;"], ans: 0 },
+      { q: "The bank analyst needs only records whose CustomerName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["CustomerName BETWEEN 'A' AND 'Z'", "CustomerName LIKE 'A%'", "CustomerName = '%A'", "CustomerName > 'A%'"], ans: 1 },
+      { q: "An ecommerce system stores records in Customers(CustomerID, Name, City, Email). The manager wants to retrieve only records where Email is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Customers HAVING Email > 50;", "SELECT * FROM Customers WHERE Email > 50;", "SELECT * FROM Customers ORDER BY Email > 50;", "UPDATE Customers SET Email > 50;"], ans: 1 },
+      { q: "In the ecommerce database, an analyst needs each record from Customers displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["SELECT Name AS RecordName FROM Customers;", "RENAME Name TO RecordName FROM Customers;", "SELECT RecordName = Name FROM Customers;", "ALTER Customers Name AS RecordName;"], ans: 0 },
+      { q: "The ecommerce supervisor wants the Customers records arranged from the highest to the lowest value of Email. Which clause should be used?", opts: ["GROUP BY Email ASC", "WHERE Email DESC", "SORT Email HIGH", "ORDER BY Email DESC"], ans: 2 },
+      { q: "A report for the ecommerce system must show the number of records in Customers, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "COUNT(*)", "MAX(*)"], ans: 2 },
+      { q: "The ecommerce database team needs the average value of Email for all rows in Customers. Which query is correct?", opts: ["SELECT AVG(Email) FROM Customers;", "SELECT COUNT(Email) FROM Customers;", "SELECT SUM(*) FROM Customers;", "SELECT MEAN(Email) FROM Customers;"], ans: 0 },
+      { q: "While preparing a ecommerce report, the analyst must show each row from Customers together with its matching related row from Orders. The common identifier is CustomerID and it appears in Orders. Which operation is required?", opts: ["INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID", "CROSS JOIN Orders WHERE unrelated columns match", "UNION Orders", "RENAME Orders"], ans: 0 },
+      { q: "The ecommerce database designer is drawing an ER diagram. One Customers record can be associated with many Orders records, but each Orders record belongs to one Customers record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "Many-to-many (M:N)", "No relationship", "One-to-many (1:N) from the first entity to the second"], ans: 2 },
+      { q: "An administrator of the ecommerce system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the ecommerce system has to add a new row to Customers without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Customers ADD ROW;", "DCL; GRANT ROW ON Customers;", "DDL; CREATE ROW Customers;", "DML; INSERT INTO Customers (CustomerID, Name) VALUES (1, 'Sample');"], ans: 1 },
+      { q: "The ecommerce analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'", "Name LIKE 'A%'"], ans: 2 },
+      { q: "A library system stores records in Members(MemberID, Name, Department, Age). The manager wants to retrieve only records where Age is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Members HAVING Age > 50;", "SELECT * FROM Members WHERE Age > 50;", "SELECT * FROM Members ORDER BY Age > 50;", "UPDATE Members SET Age > 50;"], ans: 1 },
+      { q: "In the library database, an analyst needs each record from Members displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Members;", "SELECT Name AS RecordName FROM Members;", "SELECT RecordName = Name FROM Members;", "ALTER Members Name AS RecordName;"], ans: 1 },
+      { q: "The library supervisor wants the Members records arranged from the highest to the lowest value of Age. Which clause should be used?", opts: ["ORDER BY Age DESC", "GROUP BY Age ASC", "WHERE Age DESC", "SORT Age HIGH"], ans: 0 },
+      { q: "A report for the library system must show the number of records in Members, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The library database team needs the average value of Age for all rows in Members. Which query is correct?", opts: ["SELECT COUNT(Age) FROM Members;", "SELECT SUM(*) FROM Members;", "SELECT AVG(Age) FROM Members;", "SELECT MEAN(Age) FROM Members;"], ans: 2 },
+      { q: "While preparing a library report, the analyst must show each row from Members together with its matching related row from Loans. The common identifier is MemberID and it appears in Loans. Which operation is required?", opts: ["CROSS JOIN Loans WHERE unrelated columns match", "UNION Loans", "RENAME Loans", "INNER JOIN Loans ON Members.MemberID = Loans.MemberID"], ans: 1 },
+      { q: "The library database designer is drawing an ER diagram. One Members record can be associated with many Loans records, but each Loans record belongs to one Members record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "One-to-many (1:N) from the first entity to the second", "Many-to-many (M:N)", "No relationship"], ans: 1 },
+      { q: "An administrator of the library system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 2 },
+      { q: "A clerk in the library system has to add a new row to Members without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Members ADD ROW;", "DML; INSERT INTO Members (MemberID, Name) VALUES (1, 'Sample');", "DCL; GRANT ROW ON Members;", "DDL; CREATE ROW Members;"], ans: 1 },
+      { q: "The library analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'", "Name LIKE 'A%'"], ans: 3 },
+      { q: "A factory system stores records in Employees(EmpID, EmpName, DeptID, Salary). The manager wants to retrieve only records where Salary is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Employees HAVING Salary > 50;", "SELECT * FROM Employees ORDER BY Salary > 50;", "SELECT * FROM Employees WHERE Salary > 50;", "UPDATE Employees SET Salary > 50;"], ans: 2 },
+      { q: "In the factory database, an analyst needs each record from Employees displayed with a temporary heading called RecordName for the EmpName column. Which query uses a column alias correctly?", opts: ["RENAME EmpName TO RecordName FROM Employees;", "SELECT RecordName = EmpName FROM Employees;", "ALTER Employees EmpName AS RecordName;", "SELECT EmpName AS RecordName FROM Employees;"], ans: 3 },
+      { q: "The factory supervisor wants the Employees records arranged from the highest to the lowest value of Salary. Which clause should be used?", opts: ["GROUP BY Salary ASC", "ORDER BY Salary DESC", "WHERE Salary DESC", "SORT Salary HIGH"], ans: 1 },
+      { q: "A report for the factory system must show the number of records in Employees, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The factory database team needs the average value of Salary for all rows in Employees. Which query is correct?", opts: ["SELECT COUNT(Salary) FROM Employees;", "SELECT SUM(*) FROM Employees;", "SELECT MEAN(Salary) FROM Employees;", "SELECT AVG(Salary) FROM Employees;"], ans: 3 },
+      { q: "While preparing a factory report, the analyst must show each row from Employees together with its matching related row from Departments. The common identifier is EmpID and it appears in Departments. Which operation is required?", opts: ["CROSS JOIN Departments WHERE unrelated columns match", "UNION Departments", "RENAME Departments", "INNER JOIN Departments ON Employees.EmpID = Departments.EmpID"], ans: 2 },
+      { q: "The factory database designer is drawing an ER diagram. One Employees record can be associated with many Departments records, but each Departments record belongs to one Employees record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the factory system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 3 },
+      { q: "A clerk in the factory system has to add a new row to Employees without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Employees ADD ROW;", "DCL; GRANT ROW ON Employees;", "DDL; CREATE ROW Employees;", "DML; INSERT INTO Employees (EmpID, EmpName) VALUES (1, 'Sample');"], ans: 3 },
+      { q: "The factory analyst needs only records whose EmpName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["EmpName BETWEEN 'A' AND 'Z'", "EmpName = '%A'", "EmpName > 'A%'", "EmpName LIKE 'A%'"], ans: 1 },
+      { q: "A hotel system stores records in Guests(GuestID, GuestName, City, Phone). The manager wants to retrieve only records where Phone is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Guests HAVING Phone > 50;", "SELECT * FROM Guests ORDER BY Phone > 50;", "UPDATE Guests SET Phone > 50;", "SELECT * FROM Guests WHERE Phone > 50;"], ans: 2 },
+      { q: "In the hotel database, an analyst needs each record from Guests displayed with a temporary heading called RecordName for the GuestName column. Which query uses a column alias correctly?", opts: ["RENAME GuestName TO RecordName FROM Guests;", "SELECT RecordName = GuestName FROM Guests;", "SELECT GuestName AS RecordName FROM Guests;", "ALTER Guests GuestName AS RecordName;"], ans: 1 },
+      { q: "The hotel supervisor wants the Guests records arranged from the highest to the lowest value of Phone. Which clause should be used?", opts: ["ORDER BY Phone DESC", "GROUP BY Phone ASC", "WHERE Phone DESC", "SORT Phone HIGH"], ans: 0 },
+      { q: "A report for the hotel system must show the number of records in Guests, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The hotel database team needs the average value of Phone for all rows in Guests. Which query is correct?", opts: ["SELECT AVG(Phone) FROM Guests;", "SELECT COUNT(Phone) FROM Guests;", "SELECT SUM(*) FROM Guests;", "SELECT MEAN(Phone) FROM Guests;"], ans: 0 },
+      { q: "While preparing a hotel report, the analyst must show each row from Guests together with its matching related row from Bookings. The common identifier is GuestID and it appears in Bookings. Which operation is required?", opts: ["INNER JOIN Bookings ON Guests.GuestID = Bookings.GuestID", "CROSS JOIN Bookings WHERE unrelated columns match", "UNION Bookings", "RENAME Bookings"], ans: 0 },
+      { q: "The hotel database designer is drawing an ER diagram. One Guests record can be associated with many Bookings records, but each Bookings record belongs to one Guests record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the hotel system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 3 },
+      { q: "A clerk in the hotel system has to add a new row to Guests without changing its structure. Which command category and statement are appropriate?", opts: ["DML; INSERT INTO Guests (GuestID, GuestName) VALUES (1, 'Sample');", "DDL; ALTER TABLE Guests ADD ROW;", "DCL; GRANT ROW ON Guests;", "DDL; CREATE ROW Guests;"], ans: 0 },
+      { q: "The hotel analyst needs only records whose GuestName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["GuestName LIKE 'A%'", "GuestName BETWEEN 'A' AND 'Z'", "GuestName = '%A'", "GuestName > 'A%'"], ans: 0 },
+      { q: "A transport system stores records in Passengers(PassengerID, Name, City, Age). The manager wants to retrieve only records where Age is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Passengers HAVING Age > 50;", "SELECT * FROM Passengers ORDER BY Age > 50;", "UPDATE Passengers SET Age > 50;", "SELECT * FROM Passengers WHERE Age > 50;"], ans: 3 },
+      { q: "In the transport database, an analyst needs each record from Passengers displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Passengers;", "SELECT RecordName = Name FROM Passengers;", "SELECT Name AS RecordName FROM Passengers;", "ALTER Passengers Name AS RecordName;"], ans: 1 },
+      { q: "The transport supervisor wants the Passengers records arranged from the highest to the lowest value of Age. Which clause should be used?", opts: ["ORDER BY Age DESC", "GROUP BY Age ASC", "WHERE Age DESC", "SORT Age HIGH"], ans: 0 },
+      { q: "A report for the transport system must show the number of records in Passengers, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "MAX(*)", "COUNT(*)"], ans: 3 },
+      { q: "The transport database team needs the average value of Age for all rows in Passengers. Which query is correct?", opts: ["SELECT COUNT(Age) FROM Passengers;", "SELECT AVG(Age) FROM Passengers;", "SELECT SUM(*) FROM Passengers;", "SELECT MEAN(Age) FROM Passengers;"], ans: 1 },
+      { q: "While preparing a transport report, the analyst must show each row from Passengers together with its matching related row from Tickets. The common identifier is PassengerID and it appears in Tickets. Which operation is required?", opts: ["CROSS JOIN Tickets WHERE unrelated columns match", "UNION Tickets", "RENAME Tickets", "INNER JOIN Tickets ON Passengers.PassengerID = Tickets.PassengerID"], ans: 1 },
+      { q: "The transport database designer is drawing an ER diagram. One Passengers record can be associated with many Tickets records, but each Tickets record belongs to one Passengers record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the transport system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the transport system has to add a new row to Passengers without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Passengers ADD ROW;", "DCL; GRANT ROW ON Passengers;", "DDL; CREATE ROW Passengers;", "DML; INSERT INTO Passengers (PassengerID, Name) VALUES (1, 'Sample');"], ans: 3 },
+      { q: "The transport analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'", "Name LIKE 'A%'"], ans: 3 },
+      { q: "A clinic system stores records in Patients(PatientID, Name, BloodGroup, City). The manager wants to retrieve only records where City is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT * FROM Patients WHERE City > 50;", "SELECT Patients HAVING City > 50;", "SELECT * FROM Patients ORDER BY City > 50;", "UPDATE Patients SET City > 50;"], ans: 0 },
+      { q: "In the clinic database, an analyst needs each record from Patients displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Patients;", "SELECT Name AS RecordName FROM Patients;", "SELECT RecordName = Name FROM Patients;", "ALTER Patients Name AS RecordName;"], ans: 2 },
+      { q: "The clinic supervisor wants the Patients records arranged from the highest to the lowest value of City. Which clause should be used?", opts: ["GROUP BY City ASC", "WHERE City DESC", "SORT City HIGH", "ORDER BY City DESC"], ans: 3 },
+      { q: "A report for the clinic system must show the number of records in Patients, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "COUNT(*)", "MAX(*)"], ans: 3 },
+      { q: "The clinic database team needs the average value of City for all rows in Patients. Which query is correct?", opts: ["SELECT COUNT(City) FROM Patients;", "SELECT SUM(*) FROM Patients;", "SELECT MEAN(City) FROM Patients;", "SELECT AVG(City) FROM Patients;"], ans: 2 },
+      { q: "While preparing a clinic report, the analyst must show each row from Patients together with its matching related row from Appointments. The common identifier is PatientID and it appears in Appointments. Which operation is required?", opts: ["CROSS JOIN Appointments WHERE unrelated columns match", "UNION Appointments", "INNER JOIN Appointments ON Patients.PatientID = Appointments.PatientID", "RENAME Appointments"], ans: 2 },
+      { q: "The clinic database designer is drawing an ER diagram. One Patients record can be associated with many Appointments records, but each Appointments record belongs to one Patients record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the clinic system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 2 },
+      { q: "A clerk in the clinic system has to add a new row to Patients without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Patients ADD ROW;", "DCL; GRANT ROW ON Patients;", "DML; INSERT INTO Patients (PatientID, Name) VALUES (1, 'Sample');", "DDL; CREATE ROW Patients;"], ans: 3 },
+      { q: "The clinic analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'", "Name LIKE 'A%'"], ans: 2 },
+      { q: "A retail system stores records in Products(ProductID, ProductName, Category, Price). The manager wants to retrieve only records where Price is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Products HAVING Price > 50;", "SELECT * FROM Products ORDER BY Price > 50;", "UPDATE Products SET Price > 50;", "SELECT * FROM Products WHERE Price > 50;"], ans: 2 },
+      { q: "In the retail database, an analyst needs each record from Products displayed with a temporary heading called RecordName for the ProductName column. Which query uses a column alias correctly?", opts: ["RENAME ProductName TO RecordName FROM Products;", "SELECT ProductName AS RecordName FROM Products;", "SELECT RecordName = ProductName FROM Products;", "ALTER Products ProductName AS RecordName;"], ans: 3 },
+      { q: "The retail supervisor wants the Products records arranged from the highest to the lowest value of Price. Which clause should be used?", opts: ["ORDER BY Price DESC", "GROUP BY Price ASC", "WHERE Price DESC", "SORT Price HIGH"], ans: 0 },
+      { q: "A report for the retail system must show the number of records in Products, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "COUNT(*)", "MAX(*)"], ans: 1 },
+      { q: "The retail database team needs the average value of Price for all rows in Products. Which query is correct?", opts: ["SELECT COUNT(Price) FROM Products;", "SELECT AVG(Price) FROM Products;", "SELECT SUM(*) FROM Products;", "SELECT MEAN(Price) FROM Products;"], ans: 1 },
+      { q: "While preparing a retail report, the analyst must show each row from Products together with its matching related row from Sales. The common identifier is ProductID and it appears in Sales. Which operation is required?", opts: ["CROSS JOIN Sales WHERE unrelated columns match", "INNER JOIN Sales ON Products.ProductID = Sales.ProductID", "UNION Sales", "RENAME Sales"], ans: 3 },
+      { q: "The retail database designer is drawing an ER diagram. One Products record can be associated with many Sales records, but each Sales record belongs to one Products record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the retail system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 3 },
+      { q: "A clerk in the retail system has to add a new row to Products without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Products ADD ROW;", "DML; INSERT INTO Products (ProductID, ProductName) VALUES (1, 'Sample');", "DCL; GRANT ROW ON Products;", "DDL; CREATE ROW Products;"], ans: 1 },
+      { q: "The retail analyst needs only records whose ProductName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["ProductName LIKE 'A%'", "ProductName BETWEEN 'A' AND 'Z'", "ProductName = '%A'", "ProductName > 'A%'"], ans: 0 },
+      { q: "An airline system stores records in Passengers(PassengerID, Name, Nationality, Age). The manager wants to retrieve only records where Age is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Passengers HAVING Age > 50;", "SELECT * FROM Passengers WHERE Age > 50;", "SELECT * FROM Passengers ORDER BY Age > 50;", "UPDATE Passengers SET Age > 50;"], ans: 1 },
+      { q: "In the airline database, an analyst needs each record from Passengers displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Passengers;", "SELECT RecordName = Name FROM Passengers;", "ALTER Passengers Name AS RecordName;", "SELECT Name AS RecordName FROM Passengers;"], ans: 2 },
+      { q: "The airline supervisor wants the Passengers records arranged from the highest to the lowest value of Age. Which clause should be used?", opts: ["ORDER BY Age DESC", "GROUP BY Age ASC", "WHERE Age DESC", "SORT Age HIGH"], ans: 0 },
+      { q: "A report for the airline system must show the number of records in Passengers, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "MAX(*)", "COUNT(*)"], ans: 3 },
+      { q: "The airline database team needs the average value of Age for all rows in Passengers. Which query is correct?", opts: ["SELECT COUNT(Age) FROM Passengers;", "SELECT SUM(*) FROM Passengers;", "SELECT MEAN(Age) FROM Passengers;", "SELECT AVG(Age) FROM Passengers;"], ans: 3 },
+      { q: "While preparing a airline report, the analyst must show each row from Passengers together with its matching related row from Flights. The common identifier is PassengerID and it appears in Flights. Which operation is required?", opts: ["CROSS JOIN Flights WHERE unrelated columns match", "UNION Flights", "RENAME Flights", "INNER JOIN Flights ON Passengers.PassengerID = Flights.PassengerID"], ans: 2 },
+      { q: "The airline database designer is drawing an ER diagram. One Passengers record can be associated with many Flights records, but each Flights record belongs to one Passengers record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the airline system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 2 },
+      { q: "A clerk in the airline system has to add a new row to Passengers without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Passengers ADD ROW;", "DCL; GRANT ROW ON Passengers;", "DDL; CREATE ROW Passengers;", "DML; INSERT INTO Passengers (PassengerID, Name) VALUES (1, 'Sample');"], ans: 1 },
+      { q: "The airline analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name LIKE 'A%'", "Name = '%A'", "Name > 'A%'"], ans: 2 },
+      { q: "A sports club system stores records in Players(PlayerID, PlayerName, TeamID, Age). The manager wants to retrieve only records where Age is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Players HAVING Age > 50;", "SELECT * FROM Players WHERE Age > 50;", "SELECT * FROM Players ORDER BY Age > 50;", "UPDATE Players SET Age > 50;"], ans: 2 },
+      { q: "In the sports club database, an analyst needs each record from Players displayed with a temporary heading called RecordName for the PlayerName column. Which query uses a column alias correctly?", opts: ["SELECT PlayerName AS RecordName FROM Players;", "RENAME PlayerName TO RecordName FROM Players;", "SELECT RecordName = PlayerName FROM Players;", "ALTER Players PlayerName AS RecordName;"], ans: 0 },
+      { q: "The sports club supervisor wants the Players records arranged from the highest to the lowest value of Age. Which clause should be used?", opts: ["GROUP BY Age ASC", "WHERE Age DESC", "SORT Age HIGH", "ORDER BY Age DESC"], ans: 1 },
+      { q: "A report for the sports club system must show the number of records in Players, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "MAX(*)", "COUNT(*)"], ans: 2 },
+      { q: "The sports club database team needs the average value of Age for all rows in Players. Which query is correct?", opts: ["SELECT COUNT(Age) FROM Players;", "SELECT SUM(*) FROM Players;", "SELECT MEAN(Age) FROM Players;", "SELECT AVG(Age) FROM Players;"], ans: 1 },
+      { q: "While preparing a sports club report, the analyst must show each row from Players together with its matching related row from Teams. The common identifier is PlayerID and it appears in Teams. Which operation is required?", opts: ["CROSS JOIN Teams WHERE unrelated columns match", "INNER JOIN Teams ON Players.PlayerID = Teams.PlayerID", "UNION Teams", "RENAME Teams"], ans: 2 },
+      { q: "The sports club database designer is drawing an ER diagram. One Players record can be associated with many Teams records, but each Teams record belongs to one Players record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "Many-to-many (M:N)", "No relationship", "One-to-many (1:N) from the first entity to the second"], ans: 3 },
+      { q: "An administrator of the sports club system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the sports club system has to add a new row to Players without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Players ADD ROW;", "DML; INSERT INTO Players (PlayerID, PlayerName) VALUES (1, 'Sample');", "DCL; GRANT ROW ON Players;", "DDL; CREATE ROW Players;"], ans: 3 },
+      { q: "The sports club analyst needs only records whose PlayerName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["PlayerName LIKE 'A%'", "PlayerName BETWEEN 'A' AND 'Z'", "PlayerName = '%A'", "PlayerName > 'A%'"], ans: 0 },
+      { q: "A restaurant system stores records in MenuItems(ItemID, ItemName, Category, Price). The manager wants to retrieve only records where Price is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT MenuItems HAVING Price > 50;", "SELECT * FROM MenuItems ORDER BY Price > 50;", "UPDATE MenuItems SET Price > 50;", "SELECT * FROM MenuItems WHERE Price > 50;"], ans: 1 },
+      { q: "In the restaurant database, an analyst needs each record from MenuItems displayed with a temporary heading called RecordName for the ItemName column. Which query uses a column alias correctly?", opts: ["RENAME ItemName TO RecordName FROM MenuItems;", "SELECT RecordName = ItemName FROM MenuItems;", "SELECT ItemName AS RecordName FROM MenuItems;", "ALTER MenuItems ItemName AS RecordName;"], ans: 2 },
+      { q: "The restaurant supervisor wants the MenuItems records arranged from the highest to the lowest value of Price. Which clause should be used?", opts: ["GROUP BY Price ASC", "WHERE Price DESC", "SORT Price HIGH", "ORDER BY Price DESC"], ans: 2 },
+      { q: "A report for the restaurant system must show the number of records in MenuItems, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The restaurant database team needs the average value of Price for all rows in MenuItems. Which query is correct?", opts: ["SELECT COUNT(Price) FROM MenuItems;", "SELECT AVG(Price) FROM MenuItems;", "SELECT SUM(*) FROM MenuItems;", "SELECT MEAN(Price) FROM MenuItems;"], ans: 3 },
+      { q: "While preparing a restaurant report, the analyst must show each row from MenuItems together with its matching related row from Orders. The common identifier is ItemID and it appears in Orders. Which operation is required?", opts: ["CROSS JOIN Orders WHERE unrelated columns match", "UNION Orders", "RENAME Orders", "INNER JOIN Orders ON MenuItems.ItemID = Orders.ItemID"], ans: 1 },
+      { q: "The restaurant database designer is drawing an ER diagram. One MenuItems record can be associated with many Orders records, but each Orders record belongs to one MenuItems record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "Many-to-many (M:N)", "No relationship", "One-to-many (1:N) from the first entity to the second"], ans: 3 },
+      { q: "An administrator of the restaurant system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the restaurant system has to add a new row to MenuItems without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE MenuItems ADD ROW;", "DCL; GRANT ROW ON MenuItems;", "DDL; CREATE ROW MenuItems;", "DML; INSERT INTO MenuItems (ItemID, ItemName) VALUES (1, 'Sample');"], ans: 3 },
+      { q: "The restaurant analyst needs only records whose ItemName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["ItemName LIKE 'A%'", "ItemName BETWEEN 'A' AND 'Z'", "ItemName = '%A'", "ItemName > 'A%'"], ans: 0 },
+      { q: "A real estate system stores records in Properties(PropertyID, City, Type, Price). The manager wants to retrieve only records where Price is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Properties HAVING Price > 50;", "SELECT * FROM Properties ORDER BY Price > 50;", "UPDATE Properties SET Price > 50;", "SELECT * FROM Properties WHERE Price > 50;"], ans: 3 },
+      { q: "In the real estate database, an analyst needs each record from Properties displayed with a temporary heading called RecordName for the City column. Which query uses a column alias correctly?", opts: ["RENAME City TO RecordName FROM Properties;", "SELECT City AS RecordName FROM Properties;", "SELECT RecordName = City FROM Properties;", "ALTER Properties City AS RecordName;"], ans: 2 },
+      { q: "The real estate supervisor wants the Properties records arranged from the highest to the lowest value of Price. Which clause should be used?", opts: ["ORDER BY Price DESC", "GROUP BY Price ASC", "WHERE Price DESC", "SORT Price HIGH"], ans: 0 },
+      { q: "A report for the real estate system must show the number of records in Properties, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "MAX(*)", "COUNT(*)"], ans: 3 },
+      { q: "The real estate database team needs the average value of Price for all rows in Properties. Which query is correct?", opts: ["SELECT COUNT(Price) FROM Properties;", "SELECT SUM(*) FROM Properties;", "SELECT AVG(Price) FROM Properties;", "SELECT MEAN(Price) FROM Properties;"], ans: 1 },
+      { q: "While preparing a real estate report, the analyst must show each row from Properties together with its matching related row from Agents. The common identifier is PropertyID and it appears in Agents. Which operation is required?", opts: ["CROSS JOIN Agents WHERE unrelated columns match", "UNION Agents", "INNER JOIN Agents ON Properties.PropertyID = Agents.PropertyID", "RENAME Agents"], ans: 2 },
+      { q: "The real estate database designer is drawing an ER diagram. One Properties record can be associated with many Agents records, but each Agents record belongs to one Properties record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "Many-to-many (M:N)", "One-to-many (1:N) from the first entity to the second", "No relationship"], ans: 2 },
+      { q: "An administrator of the real estate system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the real estate system has to add a new row to Properties without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Properties ADD ROW;", "DML; INSERT INTO Properties (PropertyID, City) VALUES (1, 'Sample');", "DCL; GRANT ROW ON Properties;", "DDL; CREATE ROW Properties;"], ans: 2 },
+      { q: "The real estate analyst needs only records whose City begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["City BETWEEN 'A' AND 'Z'", "City = '%A'", "City LIKE 'A%'", "City > 'A%'"], ans: 1 },
+      { q: "An online learning system stores records in Learners(LearnerID, Name, Level, City). The manager wants to retrieve only records where City is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT * FROM Learners WHERE City > 50;", "SELECT Learners HAVING City > 50;", "SELECT * FROM Learners ORDER BY City > 50;", "UPDATE Learners SET City > 50;"], ans: 0 },
+      { q: "In the online learning database, an analyst needs each record from Learners displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["SELECT Name AS RecordName FROM Learners;", "RENAME Name TO RecordName FROM Learners;", "SELECT RecordName = Name FROM Learners;", "ALTER Learners Name AS RecordName;"], ans: 0 },
+      { q: "The online learning supervisor wants the Learners records arranged from the highest to the lowest value of City. Which clause should be used?", opts: ["ORDER BY City DESC", "GROUP BY City ASC", "WHERE City DESC", "SORT City HIGH"], ans: 0 },
+      { q: "A report for the online learning system must show the number of records in Learners, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The online learning database team needs the average value of City for all rows in Learners. Which query is correct?", opts: ["SELECT COUNT(City) FROM Learners;", "SELECT AVG(City) FROM Learners;", "SELECT SUM(*) FROM Learners;", "SELECT MEAN(City) FROM Learners;"], ans: 3 },
+      { q: "While preparing a online learning report, the analyst must show each row from Learners together with its matching related row from Courses. The common identifier is LearnerID and it appears in Courses. Which operation is required?", opts: ["CROSS JOIN Courses WHERE unrelated columns match", "INNER JOIN Courses ON Learners.LearnerID = Courses.LearnerID", "UNION Courses", "RENAME Courses"], ans: 1 },
+      { q: "The online learning database designer is drawing an ER diagram. One Learners record can be associated with many Courses records, but each Courses record belongs to one Learners record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the online learning system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 2 },
+      { q: "A clerk in the online learning system has to add a new row to Learners without changing its structure. Which command category and statement are appropriate?", opts: ["DML; INSERT INTO Learners (LearnerID, Name) VALUES (1, 'Sample');", "DDL; ALTER TABLE Learners ADD ROW;", "DCL; GRANT ROW ON Learners;", "DDL; CREATE ROW Learners;"], ans: 0 },
+      { q: "The online learning analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name LIKE 'A%'", "Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'"], ans: 0 },
+      { q: "A telecom system stores records in Subscribers(SubID, Name, City, PlanID). The manager wants to retrieve only records where PlanID is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Subscribers HAVING PlanID > 50;", "SELECT * FROM Subscribers ORDER BY PlanID > 50;", "SELECT * FROM Subscribers WHERE PlanID > 50;", "UPDATE Subscribers SET PlanID > 50;"], ans: 3 },
+      { q: "In the telecom database, an analyst needs each record from Subscribers displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Subscribers;", "SELECT RecordName = Name FROM Subscribers;", "SELECT Name AS RecordName FROM Subscribers;", "ALTER Subscribers Name AS RecordName;"], ans: 1 },
+      { q: "The telecom supervisor wants the Subscribers records arranged from the highest to the lowest value of PlanID. Which clause should be used?", opts: ["GROUP BY PlanID ASC", "WHERE PlanID DESC", "ORDER BY PlanID DESC", "SORT PlanID HIGH"], ans: 2 },
+      { q: "A report for the telecom system must show the number of records in Subscribers, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "COUNT(*)", "AVG(*)", "MAX(*)"], ans: 1 },
+      { q: "The telecom database team needs the average value of PlanID for all rows in Subscribers. Which query is correct?", opts: ["SELECT COUNT(PlanID) FROM Subscribers;", "SELECT SUM(*) FROM Subscribers;", "SELECT MEAN(PlanID) FROM Subscribers;", "SELECT AVG(PlanID) FROM Subscribers;"], ans: 3 },
+      { q: "While preparing a telecom report, the analyst must show each row from Subscribers together with its matching related row from Plans. The common identifier is SubID and it appears in Plans. Which operation is required?", opts: ["CROSS JOIN Plans WHERE unrelated columns match", "UNION Plans", "INNER JOIN Plans ON Subscribers.SubID = Plans.SubID", "RENAME Plans"], ans: 2 },
+      { q: "The telecom database designer is drawing an ER diagram. One Subscribers record can be associated with many Plans records, but each Plans record belongs to one Subscribers record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the telecom system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 0 },
+      { q: "A clerk in the telecom system has to add a new row to Subscribers without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Subscribers ADD ROW;", "DML; INSERT INTO Subscribers (SubID, Name) VALUES (1, 'Sample');", "DCL; GRANT ROW ON Subscribers;", "DDL; CREATE ROW Subscribers;"], ans: 2 },
+      { q: "The telecom analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'", "Name LIKE 'A%'"], ans: 1 },
+      { q: "A pharmacy system stores records in Medicines(MedicineID, MedicineName, Formula, Price). The manager wants to retrieve only records where Price is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Medicines HAVING Price > 50;", "SELECT * FROM Medicines WHERE Price > 50;", "SELECT * FROM Medicines ORDER BY Price > 50;", "UPDATE Medicines SET Price > 50;"], ans: 1 },
+      { q: "In the pharmacy database, an analyst needs each record from Medicines displayed with a temporary heading called RecordName for the MedicineName column. Which query uses a column alias correctly?", opts: ["RENAME MedicineName TO RecordName FROM Medicines;", "SELECT MedicineName AS RecordName FROM Medicines;", "SELECT RecordName = MedicineName FROM Medicines;", "ALTER Medicines MedicineName AS RecordName;"], ans: 1 },
+      { q: "The pharmacy supervisor wants the Medicines records arranged from the highest to the lowest value of Price. Which clause should be used?", opts: ["GROUP BY Price ASC", "WHERE Price DESC", "SORT Price HIGH", "ORDER BY Price DESC"], ans: 3 },
+      { q: "A report for the pharmacy system must show the number of records in Medicines, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "COUNT(*)", "AVG(*)", "MAX(*)"], ans: 1 },
+      { q: "The pharmacy database team needs the average value of Price for all rows in Medicines. Which query is correct?", opts: ["SELECT COUNT(Price) FROM Medicines;", "SELECT AVG(Price) FROM Medicines;", "SELECT SUM(*) FROM Medicines;", "SELECT MEAN(Price) FROM Medicines;"], ans: 2 },
+      { q: "While preparing a pharmacy report, the analyst must show each row from Medicines together with its matching related row from Purchases. The common identifier is MedicineID and it appears in Purchases. Which operation is required?", opts: ["INNER JOIN Purchases ON Medicines.MedicineID = Purchases.MedicineID", "CROSS JOIN Purchases WHERE unrelated columns match", "UNION Purchases", "RENAME Purchases"], ans: 0 },
+      { q: "The pharmacy database designer is drawing an ER diagram. One Medicines record can be associated with many Purchases records, but each Purchases record belongs to one Medicines record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "One-to-many (1:N) from the first entity to the second", "Many-to-many (M:N)", "No relationship"], ans: 3 },
+      { q: "An administrator of the pharmacy system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 2 },
+      { q: "A clerk in the pharmacy system has to add a new row to Medicines without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Medicines ADD ROW;", "DCL; GRANT ROW ON Medicines;", "DML; INSERT INTO Medicines (MedicineID, MedicineName) VALUES (1, 'Sample');", "DDL; CREATE ROW Medicines;"], ans: 2 },
+      { q: "The pharmacy analyst needs only records whose MedicineName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["MedicineName BETWEEN 'A' AND 'Z'", "MedicineName = '%A'", "MedicineName > 'A%'", "MedicineName LIKE 'A%'"], ans: 3 },
+      { q: "A car rental system stores records in Customers(CustomerID, Name, LicenseNo, City). The manager wants to retrieve only records where City is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Customers HAVING City > 50;", "SELECT * FROM Customers ORDER BY City > 50;", "SELECT * FROM Customers WHERE City > 50;", "UPDATE Customers SET City > 50;"], ans: 1 },
+      { q: "In the car rental database, an analyst needs each record from Customers displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Customers;", "SELECT RecordName = Name FROM Customers;", "ALTER Customers Name AS RecordName;", "SELECT Name AS RecordName FROM Customers;"], ans: 3 },
+      { q: "The car rental supervisor wants the Customers records arranged from the highest to the lowest value of City. Which clause should be used?", opts: ["GROUP BY City ASC", "WHERE City DESC", "SORT City HIGH", "ORDER BY City DESC"], ans: 2 },
+      { q: "A report for the car rental system must show the number of records in Customers, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The car rental database team needs the average value of City for all rows in Customers. Which query is correct?", opts: ["SELECT COUNT(City) FROM Customers;", "SELECT SUM(*) FROM Customers;", "SELECT MEAN(City) FROM Customers;", "SELECT AVG(City) FROM Customers;"], ans: 3 },
+      { q: "While preparing a car rental report, the analyst must show each row from Customers together with its matching related row from Rentals. The common identifier is CustomerID and it appears in Rentals. Which operation is required?", opts: ["CROSS JOIN Rentals WHERE unrelated columns match", "UNION Rentals", "INNER JOIN Rentals ON Customers.CustomerID = Rentals.CustomerID", "RENAME Rentals"], ans: 2 },
+      { q: "The car rental database designer is drawing an ER diagram. One Customers record can be associated with many Rentals records, but each Rentals record belongs to one Customers record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the car rental system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 0 },
+      { q: "A clerk in the car rental system has to add a new row to Customers without changing its structure. Which command category and statement are appropriate?", opts: ["DML; INSERT INTO Customers (CustomerID, Name) VALUES (1, 'Sample');", "DDL; ALTER TABLE Customers ADD ROW;", "DCL; GRANT ROW ON Customers;", "DDL; CREATE ROW Customers;"], ans: 0 },
+      { q: "The car rental analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'", "Name LIKE 'A%'"], ans: 2 },
+      { q: "A job portal system stores records in Applicants(ApplicantID, Name, City, Experience). The manager wants to retrieve only records where Experience is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Applicants HAVING Experience > 50;", "SELECT * FROM Applicants ORDER BY Experience > 50;", "SELECT * FROM Applicants WHERE Experience > 50;", "UPDATE Applicants SET Experience > 50;"], ans: 3 },
+      { q: "In the job portal database, an analyst needs each record from Applicants displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Applicants;", "SELECT RecordName = Name FROM Applicants;", "SELECT Name AS RecordName FROM Applicants;", "ALTER Applicants Name AS RecordName;"], ans: 2 },
+      { q: "The job portal supervisor wants the Applicants records arranged from the highest to the lowest value of Experience. Which clause should be used?", opts: ["GROUP BY Experience ASC", "WHERE Experience DESC", "ORDER BY Experience DESC", "SORT Experience HIGH"], ans: 3 },
+      { q: "A report for the job portal system must show the number of records in Applicants, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "MAX(*)", "COUNT(*)"], ans: 3 },
+      { q: "The job portal database team needs the average value of Experience for all rows in Applicants. Which query is correct?", opts: ["SELECT COUNT(Experience) FROM Applicants;", "SELECT SUM(*) FROM Applicants;", "SELECT AVG(Experience) FROM Applicants;", "SELECT MEAN(Experience) FROM Applicants;"], ans: 3 },
+      { q: "While preparing a job portal report, the analyst must show each row from Applicants together with its matching related row from Applications. The common identifier is ApplicantID and it appears in Applications. Which operation is required?", opts: ["CROSS JOIN Applications WHERE unrelated columns match", "UNION Applications", "INNER JOIN Applications ON Applicants.ApplicantID = Applications.ApplicantID", "RENAME Applications"], ans: 1 },
+      { q: "The job portal database designer is drawing an ER diagram. One Applicants record can be associated with many Applications records, but each Applications record belongs to one Applicants record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "One-to-many (1:N) from the first entity to the second", "Many-to-many (M:N)", "No relationship"], ans: 2 },
+      { q: "An administrator of the job portal system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 0 },
+      { q: "A clerk in the job portal system has to add a new row to Applicants without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Applicants ADD ROW;", "DCL; GRANT ROW ON Applicants;", "DML; INSERT INTO Applicants (ApplicantID, Name) VALUES (1, 'Sample');", "DDL; CREATE ROW Applicants;"], ans: 3 },
+      { q: "The job portal analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'", "Name LIKE 'A%'"], ans: 2 },
+      { q: "A museum system stores records in Visitors(VisitorID, Name, City, Age). The manager wants to retrieve only records where Age is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Visitors HAVING Age > 50;", "SELECT * FROM Visitors ORDER BY Age > 50;", "SELECT * FROM Visitors WHERE Age > 50;", "UPDATE Visitors SET Age > 50;"], ans: 3 },
+      { q: "In the museum database, an analyst needs each record from Visitors displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["SELECT Name AS RecordName FROM Visitors;", "RENAME Name TO RecordName FROM Visitors;", "SELECT RecordName = Name FROM Visitors;", "ALTER Visitors Name AS RecordName;"], ans: 0 },
+      { q: "The museum supervisor wants the Visitors records arranged from the highest to the lowest value of Age. Which clause should be used?", opts: ["GROUP BY Age ASC", "WHERE Age DESC", "SORT Age HIGH", "ORDER BY Age DESC"], ans: 3 },
+      { q: "A report for the museum system must show the number of records in Visitors, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "MAX(*)", "COUNT(*)"], ans: 2 },
+      { q: "The museum database team needs the average value of Age for all rows in Visitors. Which query is correct?", opts: ["SELECT COUNT(Age) FROM Visitors;", "SELECT AVG(Age) FROM Visitors;", "SELECT SUM(*) FROM Visitors;", "SELECT MEAN(Age) FROM Visitors;"], ans: 3 },
+      { q: "While preparing a museum report, the analyst must show each row from Visitors together with its matching related row from Tickets. The common identifier is VisitorID and it appears in Tickets. Which operation is required?", opts: ["INNER JOIN Tickets ON Visitors.VisitorID = Tickets.VisitorID", "CROSS JOIN Tickets WHERE unrelated columns match", "UNION Tickets", "RENAME Tickets"], ans: 0 },
+      { q: "The museum database designer is drawing an ER diagram. One Visitors record can be associated with many Tickets records, but each Tickets record belongs to one Visitors record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "Many-to-many (M:N)", "One-to-many (1:N) from the first entity to the second", "No relationship"], ans: 3 },
+      { q: "An administrator of the museum system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 0 },
+      { q: "A clerk in the museum system has to add a new row to Visitors without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Visitors ADD ROW;", "DCL; GRANT ROW ON Visitors;", "DDL; CREATE ROW Visitors;", "DML; INSERT INTO Visitors (VisitorID, Name) VALUES (1, 'Sample');"], ans: 3 },
+      { q: "The museum analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name LIKE 'A%'", "Name = '%A'", "Name > 'A%'"], ans: 3 },
+      { q: "A warehouse system stores records in Items(ItemID, ItemName, Category, Stock). The manager wants to retrieve only records where Stock is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Items HAVING Stock > 50;", "SELECT * FROM Items WHERE Stock > 50;", "SELECT * FROM Items ORDER BY Stock > 50;", "UPDATE Items SET Stock > 50;"], ans: 3 },
+      { q: "In the warehouse database, an analyst needs each record from Items displayed with a temporary heading called RecordName for the ItemName column. Which query uses a column alias correctly?", opts: ["SELECT ItemName AS RecordName FROM Items;", "RENAME ItemName TO RecordName FROM Items;", "SELECT RecordName = ItemName FROM Items;", "ALTER Items ItemName AS RecordName;"], ans: 0 },
+      { q: "The warehouse supervisor wants the Items records arranged from the highest to the lowest value of Stock. Which clause should be used?", opts: ["GROUP BY Stock ASC", "WHERE Stock DESC", "ORDER BY Stock DESC", "SORT Stock HIGH"], ans: 3 },
+      { q: "A report for the warehouse system must show the number of records in Items, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "COUNT(*)", "AVG(*)", "MAX(*)"], ans: 2 },
+      { q: "The warehouse database team needs the average value of Stock for all rows in Items. Which query is correct?", opts: ["SELECT COUNT(Stock) FROM Items;", "SELECT SUM(*) FROM Items;", "SELECT MEAN(Stock) FROM Items;", "SELECT AVG(Stock) FROM Items;"], ans: 2 },
+      { q: "While preparing a warehouse report, the analyst must show each row from Items together with its matching related row from Movements. The common identifier is ItemID and it appears in Movements. Which operation is required?", opts: ["INNER JOIN Movements ON Items.ItemID = Movements.ItemID", "CROSS JOIN Movements WHERE unrelated columns match", "UNION Movements", "RENAME Movements"], ans: 0 },
+      { q: "The warehouse database designer is drawing an ER diagram. One Items record can be associated with many Movements records, but each Movements record belongs to one Items record. Which cardinality should be drawn?", opts: ["One-to-many (1:N) from the first entity to the second", "One-to-one (1:1)", "Many-to-many (M:N)", "No relationship"], ans: 0 },
+      { q: "An administrator of the warehouse system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);"], ans: 2 },
+      { q: "A clerk in the warehouse system has to add a new row to Items without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Items ADD ROW;", "DCL; GRANT ROW ON Items;", "DML; INSERT INTO Items (ItemID, ItemName) VALUES (1, 'Sample');", "DDL; CREATE ROW Items;"], ans: 1 },
+      { q: "The warehouse analyst needs only records whose ItemName begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["ItemName BETWEEN 'A' AND 'Z'", "ItemName LIKE 'A%'", "ItemName = '%A'", "ItemName > 'A%'"], ans: 2 },
+      { q: "A university hostel system stores records in Residents(ResidentID, Name, RoomID, Semester). The manager wants to retrieve only records where Semester is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Residents HAVING Semester > 50;", "SELECT * FROM Residents ORDER BY Semester > 50;", "UPDATE Residents SET Semester > 50;", "SELECT * FROM Residents WHERE Semester > 50;"], ans: 2 },
+      { q: "In the university hostel database, an analyst needs each record from Residents displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Residents;", "SELECT RecordName = Name FROM Residents;", "ALTER Residents Name AS RecordName;", "SELECT Name AS RecordName FROM Residents;"], ans: 3 },
+      { q: "The university hostel supervisor wants the Residents records arranged from the highest to the lowest value of Semester. Which clause should be used?", opts: ["GROUP BY Semester ASC", "WHERE Semester DESC", "ORDER BY Semester DESC", "SORT Semester HIGH"], ans: 1 },
+      { q: "A report for the university hostel system must show the number of records in Residents, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "COUNT(*)", "MAX(*)"], ans: 3 },
+      { q: "The university hostel database team needs the average value of Semester for all rows in Residents. Which query is correct?", opts: ["SELECT COUNT(Semester) FROM Residents;", "SELECT SUM(*) FROM Residents;", "SELECT MEAN(Semester) FROM Residents;", "SELECT AVG(Semester) FROM Residents;"], ans: 2 },
+      { q: "While preparing a university hostel report, the analyst must show each row from Residents together with its matching related row from Rooms. The common identifier is ResidentID and it appears in Rooms. Which operation is required?", opts: ["CROSS JOIN Rooms WHERE unrelated columns match", "UNION Rooms", "RENAME Rooms", "INNER JOIN Rooms ON Residents.ResidentID = Rooms.ResidentID"], ans: 1 },
+      { q: "The university hostel database designer is drawing an ER diagram. One Residents record can be associated with many Rooms records, but each Rooms record belongs to one Residents record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "One-to-many (1:N) from the first entity to the second", "Many-to-many (M:N)", "No relationship"], ans: 3 },
+      { q: "An administrator of the university hostel system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 0 },
+      { q: "A clerk in the university hostel system has to add a new row to Residents without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Residents ADD ROW;", "DCL; GRANT ROW ON Residents;", "DML; INSERT INTO Residents (ResidentID, Name) VALUES (1, 'Sample');", "DDL; CREATE ROW Residents;"], ans: 1 },
+      { q: "The university hostel analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name LIKE 'A%'", "Name = '%A'", "Name > 'A%'"], ans: 2 },
+      { q: "An insurance system stores records in Policyholders(HolderID, Name, City, Age). The manager wants to retrieve only records where Age is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Policyholders HAVING Age > 50;", "SELECT * FROM Policyholders WHERE Age > 50;", "SELECT * FROM Policyholders ORDER BY Age > 50;", "UPDATE Policyholders SET Age > 50;"], ans: 3 },
+      { q: "In the insurance database, an analyst needs each record from Policyholders displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Policyholders;", "SELECT RecordName = Name FROM Policyholders;", "SELECT Name AS RecordName FROM Policyholders;", "ALTER Policyholders Name AS RecordName;"], ans: 1 },
+      { q: "The insurance supervisor wants the Policyholders records arranged from the highest to the lowest value of Age. Which clause should be used?", opts: ["GROUP BY Age ASC", "WHERE Age DESC", "SORT Age HIGH", "ORDER BY Age DESC"], ans: 3 },
+      { q: "A report for the insurance system must show the number of records in Policyholders, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The insurance database team needs the average value of Age for all rows in Policyholders. Which query is correct?", opts: ["SELECT COUNT(Age) FROM Policyholders;", "SELECT AVG(Age) FROM Policyholders;", "SELECT SUM(*) FROM Policyholders;", "SELECT MEAN(Age) FROM Policyholders;"], ans: 3 },
+      { q: "While preparing a insurance report, the analyst must show each row from Policyholders together with its matching related row from Policies. The common identifier is HolderID and it appears in Policies. Which operation is required?", opts: ["INNER JOIN Policies ON Policyholders.HolderID = Policies.HolderID", "CROSS JOIN Policies WHERE unrelated columns match", "UNION Policies", "RENAME Policies"], ans: 0 },
+      { q: "The insurance database designer is drawing an ER diagram. One Policyholders record can be associated with many Policies records, but each Policies record belongs to one Policyholders record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "One-to-many (1:N) from the first entity to the second", "Many-to-many (M:N)", "No relationship"], ans: 3 },
+      { q: "An administrator of the insurance system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the insurance system has to add a new row to Policyholders without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Policyholders ADD ROW;", "DCL; GRANT ROW ON Policyholders;", "DML; INSERT INTO Policyholders (HolderID, Name) VALUES (1, 'Sample');", "DDL; CREATE ROW Policyholders;"], ans: 3 },
+      { q: "The insurance analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name > 'A%'", "Name LIKE 'A%'"], ans: 1 },
+      { q: "A event management system stores records in Attendees(AttendeeID, Name, City, Category). The manager wants to retrieve only records where Category is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Attendees HAVING Category > 50;", "SELECT * FROM Attendees ORDER BY Category > 50;", "UPDATE Attendees SET Category > 50;", "SELECT * FROM Attendees WHERE Category > 50;"], ans: 2 },
+      { q: "In the event management database, an analyst needs each record from Attendees displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Attendees;", "SELECT RecordName = Name FROM Attendees;", "SELECT Name AS RecordName FROM Attendees;", "ALTER Attendees Name AS RecordName;"], ans: 3 },
+      { q: "The event management supervisor wants the Attendees records arranged from the highest to the lowest value of Category. Which clause should be used?", opts: ["GROUP BY Category ASC", "WHERE Category DESC", "SORT Category HIGH", "ORDER BY Category DESC"], ans: 1 },
+      { q: "A report for the event management system must show the number of records in Attendees, including all rows. Which aggregate expression is appropriate?", opts: ["COUNT(*)", "SUM(*)", "AVG(*)", "MAX(*)"], ans: 0 },
+      { q: "The event management database team needs the average value of Category for all rows in Attendees. Which query is correct?", opts: ["SELECT COUNT(Category) FROM Attendees;", "SELECT SUM(*) FROM Attendees;", "SELECT AVG(Category) FROM Attendees;", "SELECT MEAN(Category) FROM Attendees;"], ans: 1 },
+      { q: "While preparing a event management report, the analyst must show each row from Attendees together with its matching related row from Events. The common identifier is AttendeeID and it appears in Events. Which operation is required?", opts: ["INNER JOIN Events ON Attendees.AttendeeID = Events.AttendeeID", "CROSS JOIN Events WHERE unrelated columns match", "UNION Events", "RENAME Events"], ans: 0 },
+      { q: "The event management database designer is drawing an ER diagram. One Attendees record can be associated with many Events records, but each Events record belongs to one Attendees record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "Many-to-many (M:N)", "One-to-many (1:N) from the first entity to the second", "No relationship"], ans: 2 },
+      { q: "An administrator of the event management system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 1 },
+      { q: "A clerk in the event management system has to add a new row to Attendees without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Attendees ADD ROW;", "DCL; GRANT ROW ON Attendees;", "DDL; CREATE ROW Attendees;", "DML; INSERT INTO Attendees (AttendeeID, Name) VALUES (1, 'Sample');"], ans: 1 },
+      { q: "The event management analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name LIKE 'A%'", "Name = '%A'", "Name > 'A%'"], ans: 3 },
+      { q: "A delivery system stores records in Riders(RiderID, Name, Zone, Rating). The manager wants to retrieve only records where Rating is greater than 50. Which SQL statement correctly applies the condition before displaying rows?", opts: ["SELECT Riders HAVING Rating > 50;", "SELECT * FROM Riders ORDER BY Rating > 50;", "SELECT * FROM Riders WHERE Rating > 50;", "UPDATE Riders SET Rating > 50;"], ans: 2 },
+      { q: "In the delivery database, an analyst needs each record from Riders displayed with a temporary heading called RecordName for the Name column. Which query uses a column alias correctly?", opts: ["RENAME Name TO RecordName FROM Riders;", "SELECT RecordName = Name FROM Riders;", "ALTER Riders Name AS RecordName;", "SELECT Name AS RecordName FROM Riders;"], ans: 3 },
+      { q: "The delivery supervisor wants the Riders records arranged from the highest to the lowest value of Rating. Which clause should be used?", opts: ["GROUP BY Rating ASC", "WHERE Rating DESC", "ORDER BY Rating DESC", "SORT Rating HIGH"], ans: 2 },
+      { q: "A report for the delivery system must show the number of records in Riders, including all rows. Which aggregate expression is appropriate?", opts: ["SUM(*)", "AVG(*)", "COUNT(*)", "MAX(*)"], ans: 2 },
+      { q: "The delivery database team needs the average value of Rating for all rows in Riders. Which query is correct?", opts: ["SELECT COUNT(Rating) FROM Riders;", "SELECT SUM(*) FROM Riders;", "SELECT AVG(Rating) FROM Riders;", "SELECT MEAN(Rating) FROM Riders;"], ans: 1 },
+      { q: "While preparing a delivery report, the analyst must show each row from Riders together with its matching related row from Deliveries. The common identifier is RiderID and it appears in Deliveries. Which operation is required?", opts: ["CROSS JOIN Deliveries WHERE unrelated columns match", "UNION Deliveries", "INNER JOIN Deliveries ON Riders.RiderID = Deliveries.RiderID", "RENAME Deliveries"], ans: 2 },
+      { q: "The delivery database designer is drawing an ER diagram. One Riders record can be associated with many Deliveries records, but each Deliveries record belongs to one Riders record. Which cardinality should be drawn?", opts: ["One-to-one (1:1)", "Many-to-many (M:N)", "No relationship", "One-to-many (1:N) from the first entity to the second"], ans: 2 },
+      { q: "An administrator of the delivery system needs to create a new table named ArchiveRecords with an integer identifier as its primary key. Which category and statement are correct?", opts: ["DML; INSERT TABLE ArchiveRecords;", "DQL; SELECT TABLE ArchiveRecords;", "DDL; CREATE TABLE ArchiveRecords (ArchiveID INT PRIMARY KEY);", "DCL; UPDATE TABLE ArchiveRecords;"], ans: 2 },
+      { q: "A clerk in the delivery system has to add a new row to Riders without changing its structure. Which command category and statement are appropriate?", opts: ["DDL; ALTER TABLE Riders ADD ROW;", "DML; INSERT INTO Riders (RiderID, Name) VALUES (1, 'Sample');", "DCL; GRANT ROW ON Riders;", "DDL; CREATE ROW Riders;"], ans: 3 },
+      { q: "The delivery analyst needs only records whose Name begins with the letters 'A'. Which condition is suitable for a text pattern search?", opts: ["Name BETWEEN 'A' AND 'Z'", "Name = '%A'", "Name LIKE 'A%'", "Name > 'A%'"], ans: 2 },
+      { q: "What is the main purpose of an ER diagram?", opts: ["To represent entities and their relationships", "To execute SQL queries", "To store database records", "To delete database tables"], ans: 0 },
+      { q: "Which shape represents an entity in an ER diagram?", opts: ["Oval", "Rectangle", "Diamond", "Circle"], ans: 1 },
+      { q: "Which shape represents an attribute in an ER diagram?", opts: ["Rectangle", "Diamond", "Oval", "Triangle"], ans: 2 },
+      { q: "Which shape represents a relationship in an ER diagram?", opts: ["Rectangle", "Oval", "Triangle", "Diamond"], ans: 3 },
+      { q: "What is a primary key?", opts: ["A key that uniquely identifies each record", "A key that stores duplicate values", "A key used only for sorting", "A key used to delete records"], ans: 0 },
+      { q: "What is the purpose of a foreign key?", opts: ["To sort records", "To establish relationships between tables", "To rename a table", "To calculate totals"], ans: 1 },
+      { q: "Which relationship allows one record to be associated with multiple records?", opts: ["One-to-one", "Many-to-many", "One-to-many", "Zero-to-zero"], ans: 2 },
+      { q: "Which relationship allows multiple students to enroll in multiple courses?", opts: ["One-to-one", "One-to-many", "Zero-to-one", "Many-to-many"], ans: 3 },
+      { q: "Which SQL command creates a new table?", opts: ["CREATE TABLE", "INSERT INTO", "UPDATE", "SELECT"], ans: 0 },
+      { q: "Which SQL command modifies the structure of an existing table?", opts: ["DELETE", "ALTER TABLE", "SELECT", "INSERT"], ans: 1 },
+      { q: "Which SQL command removes a table completely?", opts: ["UPDATE", "DELETE", "DROP TABLE", "SELECT"], ans: 2 },
+      { q: "Which SQL command inserts new records into a table?", opts: ["ALTER", "DROP", "CREATE", "INSERT INTO"], ans: 3 },
+      { q: "Which SQL command modifies existing records?", opts: ["UPDATE", "CREATE", "DROP", "SELECT"], ans: 0 },
+      { q: "Which SQL command retrieves data from a table?", opts: ["DELETE", "SELECT", "ALTER", "INSERT"], ans: 1 },
+      { q: "Which command removes records but keeps the table structure?", opts: ["DROP TABLE", "ALTER TABLE", "DELETE", "CREATE TABLE"], ans: 2 },
+      { q: "Which category includes CREATE, ALTER, and DROP commands?", opts: ["DML", "DCL", "TCL", "DDL"], ans: 3 },
+      { q: "Which category includes INSERT, UPDATE, and DELETE commands?", opts: ["DML", "DDL", "DCL", "TCL"], ans: 0 },
+      { q: "Which aggregate function counts records?", opts: ["SUM()", "COUNT()", "AVG()", "MAX()"], ans: 1 },
+      { q: "Which aggregate function calculates the total of numeric values?", opts: ["COUNT()", "AVG()", "SUM()", "MIN()"], ans: 2 },
+      { q: "Which aggregate function calculates the average value?", opts: ["MAX()", "COUNT()", "SUM()", "AVG()"], ans: 3 },
+      { q: "Which aggregate function returns the highest value?", opts: ["MAX()", "MIN()", "SUM()", "AVG()"], ans: 0 },
+      { q: "Which aggregate function returns the lowest value?", opts: ["SUM()", "MIN()", "COUNT()", "MAX()"], ans: 1 },
+      { q: "Which SQL clause combines data from multiple tables?", opts: ["ORDER BY", "WHERE", "JOIN", "LIKE"], ans: 2 },
+      { q: "Which join returns only matching records from both tables?", opts: ["LEFT JOIN", "RIGHT JOIN", "CROSS JOIN", "INNER JOIN"], ans: 3 },
+      { q: "Which join returns all records from the left table?", opts: ["LEFT JOIN", "INNER JOIN", "CROSS JOIN", "SELF JOIN"], ans: 0 },
+      { q: "Which join returns all records from the right table?", opts: ["INNER JOIN", "RIGHT JOIN", "LEFT JOIN", "CROSS JOIN"], ans: 1 },
+      { q: "Which join produces every possible combination of rows from two tables?", opts: ["INNER JOIN", "LEFT JOIN", "CROSS JOIN", "SELF JOIN"], ans: 2 },
+      { q: "What is a SELF JOIN?", opts: ["Joining two databases", "Joining two different servers", "Joining tables without conditions", "Joining a table with itself"], ans: 3 },
+      { q: "Which relational algebra operation selects rows based on a condition?", opts: ["Selection", "Projection", "Union", "Rename"], ans: 0 },
+      { q: "Which relational algebra operation selects specific columns?", opts: ["Selection", "Projection", "Intersection", "Difference"], ans: 1 },
+      { q: "Which relational algebra operation combines tuples from two compatible relations?", opts: ["Difference", "Selection", "Union", "Rename"], ans: 2 },
+      { q: "Which relational algebra operation returns common tuples from two relations?", opts: ["Union", "Difference", "Projection", "Intersection"], ans: 3 },
+      { q: "Which relational algebra operation returns tuples present in the first relation but not in the second?", opts: ["Difference", "Union", "Intersection", "Selection"], ans: 0 },
+      { q: "Which relational algebra operation produces all possible combinations of tuples?", opts: ["Projection", "Cartesian Product", "Rename", "Selection"], ans: 1 },
+      { q: "Which relational algebra operation changes the name of a relation?", opts: ["Union", "Selection", "Rename", "Intersection"], ans: 2 },
+      { q: "Which SQL clause filters records based on conditions?", opts: ["ORDER BY", "GROUP BY", "JOIN", "WHERE"], ans: 3 },
+      { q: "Which keyword is used to assign an alias to a column?", opts: ["AS", "WHERE", "TOP", "BETWEEN"], ans: 0 },
+      { q: "Which SQL clause sorts the query results?", opts: ["WHERE", "ORDER BY", "JOIN", "LIKE"], ans: 1 },
+      { q: "Which keyword sorts records in descending order?", opts: ["ASC", "TOP", "DESC", "WHERE"], ans: 2 },
+      { q: "Which keyword sorts records in ascending order?", opts: ["DESC", "NOT", "LIKE", "ASC"], ans: 3 },
+      { q: "Which logical operator requires both conditions to be true?", opts: ["AND", "OR", "NOT", "LIKE"], ans: 0 },
+      { q: "Which logical operator returns records when at least one condition is true?", opts: ["AND", "OR", "NOT", "BETWEEN"], ans: 1 },
+      { q: "Which logical operator reverses a condition?", opts: ["AND", "OR", "NOT", "AS"], ans: 2 },
+      { q: "Which keyword limits the number of returned records in SQL Server?", opts: ["LIMIT", "FIRST", "ROWS", "TOP"], ans: 3 },
+      { q: "Which SQL operator searches for a specific text pattern?", opts: ["LIKE", "BETWEEN", "JOIN", "ORDER BY"], ans: 0 },
+      { q: "What does the percent (%) wildcard represent in SQL LIKE?", opts: ["Exactly one character", "Zero or more characters", "Only numbers", "A table name"], ans: 1 },
+      { q: "What does the underscore (_) wildcard represent in SQL LIKE?", opts: ["Multiple characters", "All records", "Exactly one character", "A database name"], ans: 2 },
+      { q: "Which operator checks whether a value falls within a specified range?", opts: ["LIKE", "JOIN", "ORDER BY", "BETWEEN"], ans: 3 },
+      { q: "Which SQL Server stored procedure can rename a table?", opts: ["sp_rename", "sp_delete", "sp_update", "sp_create"], ans: 0 },
+      { q: "Which SQL Server stored procedure can rename a column?", opts: ["sp_select", "sp_rename", "sp_insert", "sp_order"], ans: 1 }
+    ];
+
+    // --------------------------------------------------------------
+    // QUIZ ENGINE
+    // --------------------------------------------------------------
+    let currentQuestions = [];
+    let answeredState = {};
+
+    const mcqList = document.getElementById('mcqList');
+    const answeredCountSpan = document.getElementById('answeredCount');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+
+    // Fisher-Yates shuffle
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Deep copy and optionally shuffle
+    function buildQuestionSet(shuffleQuestions = false, shuffleOptions = false) {
+      let items = rawMCQs.map((item, idx) => ({
+        originalIndex: idx,
+        q: item.q,
+        opts: [...item.opts],
+        correctIdx: item.ans
+      }));
+
+      if (shuffleQuestions) {
+        items = shuffleArray(items);
+      }
+
+      if (shuffleOptions) {
+        items = items.map(item => {
+          const correctOptionText = item.opts[item.correctIdx];
+          const shuffledOpts = shuffleArray([...item.opts]);
+          const newCorrectIdx = shuffledOpts.indexOf(correctOptionText);
+          return {
+            ...item,
+            opts: shuffledOpts,
+            correctIdx: newCorrectIdx
+          };
+        });
+      }
+
+      return items;
+    }
+
+    function renderQuiz(questions, resetAnswers = true) {
+      if (resetAnswers) {
+        answeredState = {};
+      }
+      currentQuestions = questions;
+      mcqList.innerHTML = '';
+      let answered = 0;
+
+      questions.forEach((q, idx) => {
+        const qNum = idx + 1;
+        const card = document.createElement('div');
+        card.className = 'mcq-card';
+        card.dataset.qIndex = idx;
+
+        const qDiv = document.createElement('div');
+        qDiv.className = 'mcq-question';
+        qDiv.innerHTML = `<span class="q-num">Q${qNum}</span> <span>${escapeHtml(q.q)}</span>`;
+
+        const optsDiv = document.createElement('div');
+        optsDiv.className = 'options';
+
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'feedback';
+        feedbackDiv.id = `feedback-${idx}`;
+
+        q.opts.forEach((optText, optIdx) => {
+          const label = document.createElement('label');
+          label.className = 'option';
+          label.dataset.optIdx = optIdx;
+
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = `q${idx}`;
+          radio.value = optIdx;
+
+          const span = document.createElement('span');
+          span.textContent = optText;
+
+          label.appendChild(radio);
+          label.appendChild(span);
+
+          // Restore answered state if any
+          const saved = answeredState[idx];
+          if (saved !== undefined) {
+            if (saved === optIdx) {
+              radio.checked = true;
+              label.classList.add('selected');
+              if (optIdx === q.correctIdx) {
+                label.classList.add('correct-option');
+                card.classList.add('correct-highlight');
+                feedbackDiv.textContent = '✓ Correct!';
+                feedbackDiv.classList.add('correct');
+              } else {
+                label.classList.add('wrong-option');
+                card.classList.add('wrong-highlight');
+                feedbackDiv.textContent = `✗ Incorrect. The correct answer is: ${escapeHtml(q.opts[q.correctIdx])}`;
+                feedbackDiv.classList.add('wrong');
+                // Also highlight correct option
+                const correctLabel = optsDiv.querySelector(`.option[data-opt-idx="${q.correctIdx}"]`);
+                if (correctLabel) correctLabel.classList.add('correct-option');
+              }
+            }
+          }
+
+          radio.addEventListener('change', (e) => {
+            handleOptionSelect(idx, optIdx, q, card, optsDiv, feedbackDiv);
+          });
+
+          optsDiv.appendChild(label);
+        });
+
+        card.appendChild(qDiv);
+        card.appendChild(optsDiv);
+        card.appendChild(feedbackDiv);
+        mcqList.appendChild(card);
+      });
+
+      updateAnsweredCount();
+    }
+
+    function handleOptionSelect(qIdx, optIdx, question, card, optsDiv, feedbackDiv) {
+      // Remove previous styling
+      const allOptions = optsDiv.querySelectorAll('.option');
+      allOptions.forEach(opt => {
+        opt.classList.remove('selected', 'correct-option', 'wrong-option');
+      });
+      card.classList.remove('correct-highlight', 'wrong-highlight');
+      feedbackDiv.textContent = '';
+      feedbackDiv.className = 'feedback';
+
+      const selectedLabel = optsDiv.querySelector(`.option[data-opt-idx="${optIdx}"]`);
+      if (selectedLabel) selectedLabel.classList.add('selected');
+
+      const isCorrect = (optIdx === question.correctIdx);
+
+      if (isCorrect) {
+        if (selectedLabel) selectedLabel.classList.add('correct-option');
+        card.classList.add('correct-highlight');
+        feedbackDiv.textContent = '✓ Correct!';
+        feedbackDiv.classList.add('correct');
+      } else {
+        if (selectedLabel) selectedLabel.classList.add('wrong-option');
+        card.classList.add('wrong-highlight');
+        const correctLabel = optsDiv.querySelector(`.option[data-opt-idx="${question.correctIdx}"]`);
+        if (correctLabel) correctLabel.classList.add('correct-option');
+        feedbackDiv.textContent = `✗ Incorrect. The correct answer is: ${escapeHtml(question.opts[question.correctIdx])}`;
+        feedbackDiv.classList.add('wrong');
+      }
+
+      answeredState[qIdx] = optIdx;
+      updateAnsweredCount();
+    }
+
+    function updateAnsweredCount() {
+      const total = currentQuestions.length;
+      const answered = Object.keys(answeredState).length;
+      answeredCountSpan.textContent = `${answered} / ${total} answered`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Initial load: no shuffle
+    function init() {
+      const questions = buildQuestionSet(false, false);
+      renderQuiz(questions, true);
+    }
+
+    // Shuffle button
+    shuffleBtn.addEventListener('click', () => {
+      const shuffled = buildQuestionSet(true, true);
+      renderQuiz(shuffled, true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    init();
+  </script>
+</body>
+</html>
